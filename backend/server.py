@@ -2,10 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
 
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
-
 
 # CORS
 app.add_middleware(
@@ -16,15 +19,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # MySQL connection
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="vmspsl1$",
-    database="notebook_db"
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME")
 )
-
 
 # Data format
 class Note(BaseModel):
@@ -84,6 +85,7 @@ def delete_note(note_id: int):
     cursor.close()
 
     return {"message": "Note deleted successfully!"}
+
 
 # Update a note
 @app.put("/notes/{note_id}")
